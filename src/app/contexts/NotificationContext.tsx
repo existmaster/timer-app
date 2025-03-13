@@ -92,6 +92,46 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     const today = new Date();
     const newNotifications: Notification[] = [];
 
+    // 첫 시간 시작 전 알림 (10분 전)
+    const firstSlot = timetableData[0];
+    const [firstStartHour, firstStartMinute] = firstSlot.startTime.split(':').map(Number);
+    
+    const firstNotificationTime = new Date(today);
+    firstNotificationTime.setHours(firstStartHour, firstStartMinute - 10, 0, 0);
+    
+    // 이미 지난 시간이면 다음 날로 설정
+    if (firstNotificationTime < today) {
+      firstNotificationTime.setDate(firstNotificationTime.getDate() + 1);
+    }
+    
+    newNotifications.push({
+      id: `first-slot-${Date.now()}`,
+      title: '첫 시간 준비',
+      message: `${firstSlot.startTime}에 첫 일정이 시작됩니다. 준비하세요!`,
+      time: firstNotificationTime,
+      triggered: false,
+    });
+    
+    // 마지막 시간 종료 알림
+    const lastSlot = timetableData[timetableData.length - 1];
+    const [lastEndHour, lastEndMinute] = lastSlot.endTime.split(':').map(Number);
+    
+    const lastNotificationTime = new Date(today);
+    lastNotificationTime.setHours(lastEndHour, lastEndMinute, 0, 0);
+    
+    // 이미 지난 시간이면 다음 날로 설정
+    if (lastNotificationTime < today) {
+      lastNotificationTime.setDate(lastNotificationTime.getDate() + 1);
+    }
+    
+    newNotifications.push({
+      id: `last-slot-${Date.now()}`,
+      title: '오늘 일정 종료',
+      message: '오늘 일정이 모두 종료되었습니다. 수고하셨습니다!',
+      time: lastNotificationTime,
+      triggered: false,
+    });
+
     timetableData.forEach((slot: TimeSlot) => {
       const [startHour, startMinute] = slot.startTime.split(':').map(Number);
       

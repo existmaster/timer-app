@@ -93,6 +93,31 @@ export default function Timetable() {
     return days[currentTime.getDay()];
   };
 
+  // 첫 시간 이전 또는 마지막 시간 이후인지 확인
+  const isBeforeFirstSlot = () => {
+    const currentHour = currentTime.getHours();
+    const currentMinute = currentTime.getMinutes();
+    const currentTimeInMinutes = currentHour * 60 + currentMinute;
+    
+    const firstSlot = timetableData[0];
+    const [firstStartHour, firstStartMinute] = firstSlot.startTime.split(':').map(Number);
+    const firstStartTimeInMinutes = firstStartHour * 60 + firstStartMinute;
+    
+    return currentTimeInMinutes < firstStartTimeInMinutes;
+  };
+  
+  const isAfterLastSlot = () => {
+    const currentHour = currentTime.getHours();
+    const currentMinute = currentTime.getMinutes();
+    const currentTimeInMinutes = currentHour * 60 + currentMinute;
+    
+    const lastSlot = timetableData[timetableData.length - 1];
+    const [lastEndHour, lastEndMinute] = lastSlot.endTime.split(':').map(Number);
+    const lastEndTimeInMinutes = lastEndHour * 60 + lastEndMinute;
+    
+    return currentTimeInMinutes >= lastEndTimeInMinutes;
+  };
+
   const getActivityForToday = (slot: TimeSlot) => {
     if (!slot.activity) return '수업';
     
@@ -129,6 +154,16 @@ export default function Timetable() {
       <Typography variant="h6" fontWeight="bold" gutterBottom>
         오늘의 시간표 ({getDayOfWeek()}요일)
       </Typography>
+      
+      {(isBeforeFirstSlot() || isAfterLastSlot()) && (
+        <Box sx={{ mb: 2, p: 1.5, bgcolor: 'info.lighter', borderRadius: 1 }}>
+          <Typography variant="body2" fontWeight="medium" color="info.dark">
+            {isBeforeFirstSlot() 
+              ? `첫 시간 준비 중 - ${timetableData[0].startTime}에 첫 일정이 시작됩니다` 
+              : '오늘 일정 종료 - 수고하셨습니다! 내일 뵙겠습니다'}
+          </Typography>
+        </Box>
+      )}
       
       <TableContainer component={Paper} sx={{ maxHeight: 'calc(100vh - 280px)' }}>
         <Table size="small" stickyHeader>
