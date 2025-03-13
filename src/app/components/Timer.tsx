@@ -248,127 +248,166 @@ export default function Timer() {
         '@keyframes pulse': {
           '0%': { opacity: 1 },
           '50%': { opacity: 0.8 },
-          '100%': { opacity: 1 },
-        }
+          '100%': { opacity: 1 }
+        },
+        borderRadius: 2,
+        display: 'flex',
+        flexDirection: 'column'
       }}
     >
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-        <Typography variant="subtitle1" fontWeight="bold">현재 시간 (KST)</Typography>
-        <Typography variant="h6" fontFamily="monospace" fontSize={{ xs: '1rem', md: '1.25rem' }}>
+      <Typography variant="h6" fontWeight="bold" gutterBottom>
+        현재 시간
+      </Typography>
+      
+      <Card 
+        elevation={0} 
+        sx={{ 
+          bgcolor: 'primary.lighter', 
+          p: 2, 
+          mb: 2,
+          borderRadius: 2,
+          border: '1px solid',
+          borderColor: 'primary.light'
+        }}
+      >
+        <Typography 
+          variant="h4" 
+          align="center" 
+          fontWeight="bold"
+          color="primary.dark"
+          sx={{ 
+            fontFamily: 'monospace',
+            letterSpacing: 1
+          }}
+        >
           {formatTime(currentTime)}
         </Typography>
-      </Box>
+      </Card>
       
-      <Divider sx={{ mb: 1.5 }} />
+      <Divider sx={{ my: 2 }} />
       
-      <Box sx={{ mb: 1.5 }}>
-        <Card sx={{ bgcolor: 'primary.light', color: 'primary.contrastText', mb: 1.5 }}>
-          <CardContent sx={{ p: { xs: 1.5, md: 2 }, '&:last-child': { pb: { xs: 1.5, md: 2 } } }}>
-            <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
-              현재 일정
+      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <Typography variant="h6" fontWeight="bold" gutterBottom>
+          현재 일정
+        </Typography>
+        
+        <Card 
+          elevation={0} 
+          sx={{ 
+            p: 2, 
+            mb: 2, 
+            bgcolor: currentSlot ? 'primary.lighter' : 'grey.100',
+            borderRadius: 2,
+            border: '1px solid',
+            borderColor: currentSlot ? 'primary.light' : 'grey.300'
+          }}
+        >
+          <CardContent sx={{ p: 1, '&:last-child': { pb: 1 } }}>
+            <Typography 
+              variant="body1" 
+              fontWeight="medium" 
+              color={currentSlot ? 'primary.dark' : 'text.secondary'}
+              gutterBottom
+            >
+              {currentSlot ? getCurrentActivity(currentSlot) : isBeforeFirstSlot() ? '첫 일정 준비 중' : '일정 없음'}
             </Typography>
-            {currentSlot ? (
+            
+            {currentSlot && (
               <>
-                <Typography variant="body1" fontWeight="bold" fontSize={{ xs: '0.9rem', md: '1rem' }}>
-                  {getCurrentActivity(currentSlot)}
-                </Typography>
-                <Typography variant="caption" sx={{ display: 'block', mt: 0.5 }}>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
                   {currentSlot.startTime} ~ {currentSlot.endTime} ({currentSlot.duration})
                 </Typography>
+                
                 <Box sx={{ mt: 1, display: 'flex', alignItems: 'center' }}>
-                  <Typography variant="caption" fontWeight="medium" sx={{ mr: 1 }}>
+                  <Typography variant="caption" color="primary.main" sx={{ mr: 1 }}>
                     남은 시간:
                   </Typography>
-                  <Typography 
-                    variant="body2" 
-                    fontFamily="monospace" 
-                    fontWeight="regular"
-                    color="inherit"
-                  >
+                  <Typography variant="body2" fontWeight="bold" color="primary.dark" fontFamily="monospace">
                     {currentTimeRemaining}
                   </Typography>
                 </Box>
-              </>
-            ) : (
-              <>
-                <Typography variant="body1" fontWeight="bold" fontSize={{ xs: '0.9rem', md: '1rem' }}>
-                  {isBeforeFirstSlot() ? '첫 시간 준비' : isAfterLastSlot() ? '오늘 일정 종료' : '일정 없음'}
-                </Typography>
-                <Typography variant="caption" sx={{ display: 'block', mt: 0.5 }}>
-                  {isBeforeFirstSlot() 
-                    ? `${timetableData[0].startTime}에 첫 일정이 시작됩니다` 
-                    : isAfterLastSlot() 
-                      ? '수고하셨습니다! 내일 뵙겠습니다' 
-                      : '현재 진행 중인 일정이 없습니다'}
-                </Typography>
               </>
             )}
           </CardContent>
         </Card>
         
-        {isAfterLastSlot() ? (
-          <Card sx={{ bgcolor: 'secondary.light', color: 'secondary.contrastText' }}>
-            <CardContent sx={{ p: { xs: 1.5, md: 2 }, '&:last-child': { pb: { xs: 1.5, md: 2 } } }}>
-              <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
-                내일 일정 안내
-              </Typography>
-              <Typography variant="body1" fontWeight="bold" fontSize={{ xs: '0.9rem', md: '1rem' }}>
-                내일 첫 일정: {getCurrentActivity(timetableData[0])}
-              </Typography>
-              <Typography variant="caption" sx={{ display: 'block', mt: 0.5 }}>
-                {timetableData[0].startTime}에 시작합니다
-              </Typography>
-            </CardContent>
-          </Card>
-        ) : (
-          <Card sx={{ bgcolor: 'secondary.light', color: 'secondary.contrastText' }}>
-            <CardContent sx={{ p: { xs: 1.5, md: 2 }, '&:last-child': { pb: { xs: 1.5, md: 2 } } }}>
-              <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
-                다음 일정
-              </Typography>
-              {nextSlot && (
-                <>
-                  <Typography variant="body1" fontWeight="bold" fontSize={{ xs: '0.9rem', md: '1rem' }}>
-                    {getCurrentActivity(nextSlot)}
+        <Typography variant="h6" fontWeight="bold" gutterBottom>
+          다음 일정
+        </Typography>
+        
+        <Card 
+          elevation={0} 
+          sx={{ 
+            p: 2, 
+            bgcolor: nextSlot ? (isTransition ? '#ffebee' : 'info.lighter') : 'grey.100',
+            borderRadius: 2,
+            border: '1px solid',
+            borderColor: nextSlot ? (isTransition ? '#ef9a9a' : 'info.light') : 'grey.300',
+            transition: 'all 0.3s ease'
+          }}
+        >
+          <CardContent sx={{ p: 1, '&:last-child': { pb: 1 } }}>
+            <Typography 
+              variant="body1" 
+              fontWeight="medium" 
+              color={nextSlot ? (isTransition ? 'error.main' : 'info.dark') : 'text.secondary'}
+              gutterBottom
+            >
+              {nextSlot ? getCurrentActivity(nextSlot) : isAfterLastSlot() ? '오늘 일정 종료' : '다음 일정 없음'}
+            </Typography>
+            
+            {nextSlot && (
+              <>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  {nextSlot.startTime} ~ {nextSlot.endTime} ({nextSlot.duration})
+                </Typography>
+                
+                <Box sx={{ mt: 1, display: 'flex', alignItems: 'center' }}>
+                  <Typography 
+                    variant="caption" 
+                    color={isTransition ? 'error.main' : 'info.main'} 
+                    sx={{ mr: 1 }}
+                  >
+                    시작까지:
                   </Typography>
-                  <Typography variant="caption" sx={{ display: 'block', mt: 0.5 }}>
-                    {nextSlot.startTime} ~ {nextSlot.endTime} ({nextSlot.duration})
+                  <Typography 
+                    variant="body2" 
+                    fontWeight="bold" 
+                    color={isTransition ? 'error.dark' : 'info.dark'} 
+                    fontFamily="monospace"
+                    sx={{
+                      animation: isTransition ? 'blink 1s infinite' : 'none',
+                      '@keyframes blink': {
+                        '0%': { opacity: 1 },
+                        '50%': { opacity: 0.5 },
+                        '100%': { opacity: 1 }
+                      }
+                    }}
+                  >
+                    {timeRemaining}
                   </Typography>
-                  <Box sx={{ mt: 1, display: 'flex', alignItems: 'center' }}>
-                    <Typography variant="caption" fontWeight="medium" sx={{ mr: 1 }}>
-                      남은 시간:
-                    </Typography>
-                    <Typography 
-                      variant="body2" 
-                      fontFamily="monospace" 
-                      fontWeight={isTransition ? 'bold' : 'regular'}
-                      color={isTransition ? 'error.main' : 'inherit'}
-                    >
-                      {timeRemaining}
-                    </Typography>
-                  </Box>
-                </>
-              )}
-            </CardContent>
-          </Card>
-        )}
+                </Box>
+              </>
+            )}
+          </CardContent>
+        </Card>
       </Box>
       
-      {isTransition && !isAfterLastSlot() && (
+      {isTransition && nextSlot && (
         <Alert 
           severity="warning" 
           sx={{ 
-            py: 0.5,
-            fontWeight: 'bold',
-            fontSize: '0.8rem',
-            animation: 'bounce 1s infinite',
-            '@keyframes bounce': {
-              '0%, 100%': { transform: 'translateY(0)' },
-              '50%': { transform: 'translateY(-5px)' },
+            mt: 2, 
+            animation: 'fadeIn 0.5s',
+            '@keyframes fadeIn': {
+              '0%': { opacity: 0 },
+              '100%': { opacity: 1 }
             }
           }}
         >
-          곧 다음 일정이 시작됩니다!
+          <Typography variant="body2">
+            <strong>{nextSlot.startTime}</strong>에 <strong>{getCurrentActivity(nextSlot)}</strong> 일정이 곧 시작됩니다!
+          </Typography>
         </Alert>
       )}
     </Paper>

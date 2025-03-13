@@ -84,7 +84,11 @@ export default function Home() {
 
   return (
     <Container maxWidth="lg" sx={{ py: 3 }}>
-      <Paper elevation={3} sx={{ p: { xs: 2.5, md: 4 }, borderRadius: 2 }}>
+      <Paper elevation={3} sx={{ 
+        p: { xs: 2.5, md: 4 }, 
+        borderRadius: 2,
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)'
+      }}>
         <Box sx={{ 
           display: 'flex', 
           justifyContent: 'space-between', 
@@ -92,7 +96,7 @@ export default function Home() {
           mb: { xs: 2, md: 3 } 
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography variant="h5" component="h1" fontWeight="bold">
+            <Typography variant="h5" component="h1" fontWeight="bold" color="primary.dark">
               시간표 알림 앱
             </Typography>
             <IconButton 
@@ -105,7 +109,19 @@ export default function Home() {
               <HelpOutlineIcon />
             </IconButton>
           </Box>
-          <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 'medium' }}>
+          <Typography 
+            variant="body2" 
+            color="text.secondary" 
+            sx={{ 
+              fontWeight: 'medium',
+              bgcolor: 'primary.lighter',
+              px: 1.5,
+              py: 0.5,
+              borderRadius: 10,
+              border: '1px solid',
+              borderColor: 'primary.light'
+            }}
+          >
             {formatDate(currentDate)} (KST)
           </Typography>
         </Box>
@@ -127,8 +143,19 @@ export default function Home() {
         aria-labelledby="help-dialog-title"
         maxWidth="sm"
         fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)'
+          }
+        }}
       >
-        <DialogTitle id="help-dialog-title" sx={{ fontWeight: 'bold', pb: 1 }}>
+        <DialogTitle id="help-dialog-title" sx={{ 
+          fontWeight: 'bold', 
+          pb: 1,
+          bgcolor: 'primary.lighter',
+          color: 'primary.dark'
+        }}>
           앱 사용 안내
         </DialogTitle>
         <DialogContent dividers sx={{ py: 2 }}>
@@ -136,32 +163,49 @@ export default function Home() {
             <ListItem>
               <ListItemText 
                 primary="현재 시간과 다음 일정까지 남은 시간이 좌측에 표시됩니다." 
+                primaryTypographyProps={{ fontWeight: 'medium' }}
               />
             </ListItem>
             <ListItem>
               <ListItemText 
                 primary="시간표에서 현재 진행 중인 일정은 파란색으로 강조되며, 진행률이 표시됩니다." 
+                primaryTypographyProps={{ fontWeight: 'medium' }}
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText 
+                primary="현재 일정으로 자동 스크롤되어 항상 현재 진행 중인 일정을 확인할 수 있습니다."
+                primaryTypographyProps={{ fontWeight: 'medium' }}
               />
             </ListItem>
             <ListItem>
               <ListItemText 
                 primary="다음 일정이 1분 이내로 남으면 알림 효과가 나타납니다." 
+                primaryTypographyProps={{ fontWeight: 'medium' }}
               />
             </ListItem>
             <ListItem>
               <ListItemText 
                 primary="앱을 계속 열어두면 시간표를 실시간으로 확인할 수 있습니다." 
+                primaryTypographyProps={{ fontWeight: 'medium' }}
               />
             </ListItem>
             <ListItem>
               <ListItemText 
                 primary="모든 시간은 한국 표준시(KST)를 기준으로 표시됩니다." 
+                primaryTypographyProps={{ fontWeight: 'medium' }}
               />
             </ListItem>
           </List>
         </DialogContent>
-        <DialogActions sx={{ px: 3, py: 2 }}>
-          <Button onClick={handleCloseHelp} color="primary" variant="contained" size="medium">
+        <DialogActions sx={{ px: 3, py: 2, bgcolor: 'grey.50' }}>
+          <Button 
+            onClick={handleCloseHelp} 
+            color="primary" 
+            variant="contained" 
+            size="medium"
+            sx={{ borderRadius: 2, px: 3 }}
+          >
             확인
           </Button>
         </DialogActions>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Paper, 
   Typography, 
@@ -22,6 +22,7 @@ export default function Timetable() {
   const [progressPercent, setProgressPercent] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [currentSlot, setCurrentSlot] = useState<TimeSlot | null>(null);
+  const currentRowRef = useRef<HTMLTableRowElement>(null);
 
   // 클라이언트 사이드에서만 렌더링되도록 설정
   useEffect(() => {
@@ -87,6 +88,19 @@ export default function Timetable() {
       setProgressPercent(0);
     }
   };
+
+  // 현재 시간대로 스크롤
+  useEffect(() => {
+    if (currentRowRef.current && mounted) {
+      // 약간의 지연 후 스크롤 실행 (UI가 완전히 렌더링된 후)
+      setTimeout(() => {
+        currentRowRef.current?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        });
+      }, 300);
+    }
+  }, [currentSlot, mounted]);
 
   const getDayOfWeek = () => {
     const days = ['일', '월', '화', '수', '목', '금', '토'];
@@ -165,7 +179,27 @@ export default function Timetable() {
         </Box>
       )}
       
-      <TableContainer component={Paper} sx={{ maxHeight: 'calc(100vh - 280px)' }}>
+      <TableContainer 
+        component={Paper} 
+        sx={{ 
+          maxHeight: 'calc(100vh - 280px)',
+          scrollBehavior: 'smooth',
+          '&::-webkit-scrollbar': {
+            width: '8px',
+          },
+          '&::-webkit-scrollbar-track': {
+            background: '#f1f1f1',
+            borderRadius: '4px',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            background: '#bbdefb',
+            borderRadius: '4px',
+          },
+          '&::-webkit-scrollbar-thumb:hover': {
+            background: '#90caf9',
+          }
+        }}
+      >
         <Table size="small" stickyHeader>
           <TableHead>
             <TableRow>
@@ -179,20 +213,44 @@ export default function Timetable() {
               return (
                 <TableRow 
                   key={index} 
+                  ref={isCurrent ? currentRowRef : null}
                   sx={{ 
                     backgroundColor: isCurrent ? 'primary.lighter' : index % 2 === 0 ? '#f5f5f5' : 'white',
                     '&:hover': {
                       backgroundColor: isCurrent ? 'primary.lighter' : '#e3f2fd'
-                    }
+                    },
+                    position: 'relative',
+                    transition: 'background-color 0.3s ease',
+                    borderLeft: isCurrent ? '4px solid #1976d2' : 'none',
                   }}
                 >
                   <TableCell sx={{ p: 1.5 }}>
-                    <Typography variant="body2">
+                    <Typography variant="body2" fontWeight={isCurrent ? 'medium' : 'regular'}>
                       {slot.startTime} ~ {slot.endTime}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
                       ({slot.duration})
                     </Typography>
+                    {isCurrent && (
+                      <Box sx={{ width: '100%', mt: 1 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+                          <LinearProgress 
+                            variant="determinate" 
+                            value={progressPercent} 
+                            color="primary"
+                            sx={{ 
+                              height: 6, 
+                              borderRadius: 3,
+                              flexGrow: 1,
+                              mr: 1
+                            }}
+                          />
+                          <Typography variant="caption" color="primary.dark" sx={{ minWidth: '40px', textAlign: 'right' }}>
+                            {progressPercent}%
+                          </Typography>
+                        </Box>
+                      </Box>
+                    )}
                   </TableCell>
                   <TableCell sx={{ p: 1.5 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -211,21 +269,19 @@ export default function Timetable() {
                           label="진행 중" 
                           size="small" 
                           color="primary" 
-                          sx={{ height: 20, fontSize: '0.65rem' }}
+                          sx={{ 
+                            height: 20, 
+                            fontSize: '0.65rem',
+                            animation: 'pulse 2s infinite',
+                            '@keyframes pulse': {
+                              '0%': { opacity: 0.7 },
+                              '50%': { opacity: 1 },
+                              '100%': { opacity: 0.7 }
+                            }
+                          }}
                         />
                       )}
                     </Box>
-                    
-                    {isCurrent && (
-                      <Box sx={{ width: '100%', mt: 1 }}>
-                        <LinearProgress 
-                          variant="determinate" 
-                          value={progressPercent} 
-                          color="primary"
-                          sx={{ height: 4, borderRadius: 2 }}
-                        />
-                      </Box>
-                    )}
                   </TableCell>
                 </TableRow>
               );
