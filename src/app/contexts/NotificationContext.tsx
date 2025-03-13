@@ -113,11 +113,15 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
         const dayOfWeek = today.getDay(); // 0: 일요일, 1: 월요일, ...
         
         if (dayOfWeek === 1 && slot.subActivities.monday) {
-          activity = slot.subActivities.monday;
+          activity = `${slot.activity} (${slot.subActivities.monday})`;
+        } else if (dayOfWeek === 2 && slot.subActivities.tuesday) {
+          activity = `${slot.activity} (${slot.subActivities.tuesday})`;
         } else if (dayOfWeek === 3 && slot.subActivities.wednesday) {
-          activity = slot.subActivities.wednesday;
+          activity = `${slot.activity} (${slot.subActivities.wednesday})`;
+        } else if (dayOfWeek === 4 && slot.subActivities.thursday) {
+          activity = `${slot.activity} (${slot.subActivities.thursday})`;
         } else if (dayOfWeek === 5 && slot.subActivities.friday) {
-          activity = slot.subActivities.friday;
+          activity = `${slot.activity} (${slot.subActivities.friday})`;
         }
       }
       

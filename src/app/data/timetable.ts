@@ -55,9 +55,11 @@ export const timetableData: TimeSlot[] = [
     duration: '30min',
     activity: '특별활동',
     subActivities: {
-      monday: '스트레칭(월)',
-      wednesday: '선배와의 대화(수)',
-      friday: '조별 활동(금)',
+      monday: '스트레칭',
+      tuesday: '스트레칭',
+      wednesday: '선배와의 대화',
+      thursday: '스트레칭',
+      friday: '조별 활동',
     },
   },
   {

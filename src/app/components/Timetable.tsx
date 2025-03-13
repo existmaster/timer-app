@@ -100,15 +100,15 @@ export default function Timetable() {
       const today = currentTime.getDay(); // 0: 일요일, 1: 월요일, ...
       
       if (today === 1 && slot.subActivities.monday) {
-        return slot.subActivities.monday;
+        return `${slot.activity} (${slot.subActivities.monday})`;
       } else if (today === 2 && slot.subActivities.tuesday) {
-        return slot.subActivities.tuesday;
+        return `${slot.activity} (${slot.subActivities.tuesday})`;
       } else if (today === 3 && slot.subActivities.wednesday) {
-        return slot.subActivities.wednesday;
+        return `${slot.activity} (${slot.subActivities.wednesday})`;
       } else if (today === 4 && slot.subActivities.thursday) {
-        return slot.subActivities.thursday;
+        return `${slot.activity} (${slot.subActivities.thursday})`;
       } else if (today === 5 && slot.subActivities.friday) {
-        return slot.subActivities.friday;
+        return `${slot.activity} (${slot.subActivities.friday})`;
       }
     }
     

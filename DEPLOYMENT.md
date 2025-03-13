@@ -6,7 +6,7 @@
 - **배포 URL**: https://kt-alp-timer.netlify.app
 - **배포 플랫폼**: Netlify
 - **사이트 ID**: 38cd2341-1828-4d99-b9d6-b8b24ba8ead6
-- **마지막 배포 날짜**: 2024년 3월 13일
+- **마지막 배포 날짜**: 2024년 6월 25일
 - **배포 로그**: https://app.netlify.com/sites/kt-alp-timer/deploys
 - **관리자 URL**: https://app.netlify.com/sites/kt-alp-timer
 
@@ -40,6 +40,11 @@ netlify deploy --prod
 5. 빌드된 `out` 디렉토리를 업로드합니다.
 
 ## 주요 기능 및 업데이트 내역
+
+### 2024년 6월 25일 업데이트
+- 특별활동 표시 방식 개선 ("특별활동 (스트레칭)" 형식으로 표시)
+- 특별활동 요일별 데이터 수정 (월/화/목: 스트레칭, 수: 선배와의 대화, 금: 조별 활동)
+- 알림 메시지 형식 통일
 
 ### 2024년 3월 13일 업데이트
 - 한국 표준시(KST) 적용
