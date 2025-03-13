@@ -3,14 +3,6 @@
 import { useEffect } from 'react';
 import { useNotifications } from '../contexts/NotificationContext';
 
-declare global {
-  interface Window {
-    electronAPI?: {
-      sendNotification: (title: string, message: string) => void;
-    };
-  }
-}
-
 export default function NotificationHandler() {
   const { notifications, markAsTriggered } = useNotifications();
 
@@ -21,12 +13,8 @@ export default function NotificationHandler() {
       
       notifications.forEach((notification) => {
         if (!notification.triggered && notification.time <= now) {
-          // 알림 표시
-          if (window.electronAPI) {
-            // Electron 환경에서 실행 중인 경우
-            window.electronAPI.sendNotification(notification.title, notification.message);
-          } else {
-            // 브라우저 환경에서 실행 중인 경우
+          // 브라우저 환경에서 알림 표시
+          if (typeof window !== 'undefined' && 'Notification' in window) {
             if (Notification.permission === 'granted') {
               new Notification(notification.title, { body: notification.message });
             } else if (Notification.permission !== 'denied') {
