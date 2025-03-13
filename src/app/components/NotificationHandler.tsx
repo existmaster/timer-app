@@ -6,10 +6,19 @@ import { useNotifications } from '../contexts/NotificationContext';
 export default function NotificationHandler() {
   const { notifications, markAsTriggered } = useNotifications();
 
+  // 현재 시간을 한국 시간(KST)으로 가져오는 함수
+  const getKoreanTime = () => {
+    const now = new Date();
+    // 한국 시간으로 변환 (UTC+9)
+    const koreaTimeOffset = 9 * 60 * 60 * 1000; // 9시간을 밀리초로 변환
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60 * 1000); // 현재 시간을 UTC로 변환
+    return new Date(utc + koreaTimeOffset);
+  };
+
   useEffect(() => {
     // 1초마다 알림 확인
     const intervalId = setInterval(() => {
-      const now = new Date();
+      const now = getKoreanTime();
       
       notifications.forEach((notification) => {
         if (!notification.triggered && notification.time <= now) {

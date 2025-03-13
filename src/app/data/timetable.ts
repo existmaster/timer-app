@@ -5,7 +5,7 @@ export const timetableData: TimeSlot[] = [
     startTime: '08:30',
     endTime: '09:10',
     duration: '40min',
-    activity: '',
+    activity: '수업',
   },
   {
     startTime: '09:10',
@@ -17,7 +17,7 @@ export const timetableData: TimeSlot[] = [
     startTime: '09:25',
     endTime: '10:05',
     duration: '40min',
-    activity: '',
+    activity: '수업',
   },
   {
     startTime: '10:05',
@@ -29,7 +29,7 @@ export const timetableData: TimeSlot[] = [
     startTime: '10:15',
     endTime: '10:55',
     duration: '40min',
-    activity: '',
+    activity: '수업',
   },
   {
     startTime: '10:55',
@@ -41,7 +41,7 @@ export const timetableData: TimeSlot[] = [
     startTime: '11:05',
     endTime: '11:50',
     duration: '45min',
-    activity: '',
+    activity: '수업',
   },
   {
     startTime: '11:50',
@@ -53,7 +53,7 @@ export const timetableData: TimeSlot[] = [
     startTime: '13:00',
     endTime: '13:30',
     duration: '30min',
-    activity: '',
+    activity: '특별활동',
     subActivities: {
       monday: '스트레칭(월)',
       wednesday: '선배와의 대화(수)',
@@ -64,7 +64,7 @@ export const timetableData: TimeSlot[] = [
     startTime: '13:40',
     endTime: '14:30',
     duration: '50min',
-    activity: '',
+    activity: '수업',
   },
   {
     startTime: '14:30',
@@ -76,7 +76,7 @@ export const timetableData: TimeSlot[] = [
     startTime: '14:40',
     endTime: '15:30',
     duration: '50min',
-    activity: '',
+    activity: '수업',
   },
   {
     startTime: '15:30',
@@ -88,7 +88,7 @@ export const timetableData: TimeSlot[] = [
     startTime: '15:40',
     endTime: '16:30',
     duration: '50min',
-    activity: '',
+    activity: '수업',
   },
   {
     startTime: '16:30',
@@ -100,6 +100,6 @@ export const timetableData: TimeSlot[] = [
     startTime: '16:40',
     endTime: '17:30',
     duration: '50min',
-    activity: '',
+    activity: '수업',
   },
 ]; 

@@ -24,20 +24,37 @@ export default function Timer() {
   // 클라이언트 사이드에서만 렌더링되도록 설정
   useEffect(() => {
     setMounted(true);
+    // 초기 마운트 시 즉시 시간 업데이트
+    updateCurrentTime();
   }, []);
+
+  // 현재 시간을 한국 시간(KST)으로 가져오는 함수
+  const getKoreanTime = () => {
+    const now = new Date();
+    // 한국 시간으로 변환 (UTC+9)
+    const koreaTimeOffset = 9 * 60 * 60 * 1000; // 9시간을 밀리초로 변환
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60 * 1000); // 현재 시간을 UTC로 변환
+    return new Date(utc + koreaTimeOffset);
+  };
+
+  // 현재 시간 업데이트 함수
+  const updateCurrentTime = () => {
+    const now = getKoreanTime();
+    setCurrentTime(now);
+    updateTimeSlots(now);
+  };
 
   // 현재 시간 업데이트
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentTime(new Date());
+      updateCurrentTime();
     }, 1000);
 
     return () => clearInterval(timer);
   }, []);
 
   // 현재 시간대와 다음 시간대 찾기
-  useEffect(() => {
-    const now = currentTime;
+  const updateTimeSlots = (now: Date) => {
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
     const currentTimeInMinutes = currentHour * 60 + currentMinute;
@@ -70,8 +87,22 @@ export default function Timer() {
     
     // 현재 시간대가 없는 경우 (모든 시간대 이후인 경우)
     if (!current) {
-      // 다음날 첫 시간대로 설정
-      next = timetableData[0];
+      // 다음 시간대 찾기 (오늘 남은 시간대 중에서)
+      for (let i = 0; i < timetableData.length; i++) {
+        const slot = timetableData[i];
+        const [startHour, startMinute] = slot.startTime.split(':').map(Number);
+        const startTimeInMinutes = startHour * 60 + startMinute;
+        
+        if (startTimeInMinutes > currentTimeInMinutes) {
+          next = slot;
+          break;
+        }
+      }
+      
+      // 오늘 남은 시간대가 없는 경우 다음날 첫 시간대로 설정
+      if (!next) {
+        next = timetableData[0];
+      }
     }
     
     setCurrentSlot(current);
@@ -83,11 +114,11 @@ export default function Timer() {
       let nextStartTimeInMinutes = nextStartHour * 60 + nextStartMinute;
       
       // 다음 시간대가 다음날인 경우
-      if (current && nextStartTimeInMinutes < (currentHour * 60 + currentMinute)) {
+      if (nextStartTimeInMinutes <= currentTimeInMinutes) {
         nextStartTimeInMinutes += 24 * 60; // 24시간 추가
       }
       
-      const remainingMinutes = nextStartTimeInMinutes - (currentHour * 60 + currentMinute);
+      const remainingMinutes = nextStartTimeInMinutes - currentTimeInMinutes;
       const hours = Math.floor(remainingMinutes / 60);
       const minutes = remainingMinutes % 60;
       const seconds = 59 - now.getSeconds();
@@ -95,28 +126,31 @@ export default function Timer() {
       setTimeRemaining(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
       
       // 다음 시간대까지 1분 이내로 남았을 때 전환 효과 활성화
-      setIsTransition(remainingMinutes <= 1);
+      setIsTransition(remainingMinutes === 0 || (remainingMinutes === 1 && seconds < 30));
     }
-  }, [currentTime]);
+  };
 
   // 현재 활동 가져오기
   const getCurrentActivity = (slot: TimeSlot | null) => {
-    if (!slot) return '';
+    if (!slot) return '일정 없음';
     
-    if (!slot.activity && !slot.subActivities) return '수업';
-    
-    if (slot.activity) return slot.activity;
-    
-    if (slot.subActivities) {
-      const today = new Date().getDay(); // 0: 일요일, 1: 월요일, ...
-      
-      if (today === 1 && slot.subActivities.monday) {
-        return slot.subActivities.monday;
-      } else if (today === 3 && slot.subActivities.wednesday) {
-        return slot.subActivities.wednesday;
-      } else if (today === 5 && slot.subActivities.friday) {
-        return slot.subActivities.friday;
+    if (slot.activity) {
+      if (slot.subActivities) {
+        const today = currentTime.getDay(); // 0: 일요일, 1: 월요일, ...
+        
+        if (today === 1 && slot.subActivities.monday) {
+          return slot.subActivities.monday;
+        } else if (today === 2 && slot.subActivities.tuesday) {
+          return slot.subActivities.tuesday;
+        } else if (today === 3 && slot.subActivities.wednesday) {
+          return slot.subActivities.wednesday;
+        } else if (today === 4 && slot.subActivities.thursday) {
+          return slot.subActivities.thursday;
+        } else if (today === 5 && slot.subActivities.friday) {
+          return slot.subActivities.friday;
+        }
       }
+      return slot.activity;
     }
     
     return '수업';
@@ -152,7 +186,7 @@ export default function Timer() {
       }}
     >
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-        <Typography variant="subtitle1" fontWeight="bold">현재 시간</Typography>
+        <Typography variant="subtitle1" fontWeight="bold">현재 시간 (KST)</Typography>
         <Typography variant="h6" fontFamily="monospace" fontSize={{ xs: '1rem', md: '1.25rem' }}>
           {formatTime(currentTime)}
         </Typography>
@@ -176,7 +210,7 @@ export default function Timer() {
                 </Typography>
               </>
             ) : (
-              <Typography variant="body2">일정 없음</Typography>
+              <Typography variant="body2">일정 없음 (수업 시간 외)</Typography>
             )}
           </CardContent>
         </Card>

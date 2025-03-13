@@ -21,28 +21,48 @@ export default function Timetable() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [progressPercent, setProgressPercent] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [currentSlot, setCurrentSlot] = useState<TimeSlot | null>(null);
 
   // 클라이언트 사이드에서만 렌더링되도록 설정
   useEffect(() => {
     setMounted(true);
+    // 초기 마운트 시 즉시 시간 업데이트
+    updateCurrentTime();
   }, []);
+
+  // 현재 시간을 한국 시간(KST)으로 가져오는 함수
+  const getKoreanTime = () => {
+    const now = new Date();
+    // 한국 시간으로 변환 (UTC+9)
+    const koreaTimeOffset = 9 * 60 * 60 * 1000; // 9시간을 밀리초로 변환
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60 * 1000); // 현재 시간을 UTC로 변환
+    return new Date(utc + koreaTimeOffset);
+  };
+
+  // 현재 시간 업데이트 함수
+  const updateCurrentTime = () => {
+    const now = getKoreanTime();
+    setCurrentTime(now);
+    updateCurrentSlotAndProgress(now);
+  };
 
   // 현재 시간 업데이트
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentTime(new Date());
+      updateCurrentTime();
     }, 1000);
 
     return () => clearInterval(timer);
   }, []);
 
   // 현재 시간대의 진행률 계산
-  useEffect(() => {
-    const now = currentTime;
+  const updateCurrentSlotAndProgress = (now: Date) => {
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
     const currentSecond = now.getSeconds();
     const currentTimeInSeconds = (currentHour * 60 + currentMinute) * 60 + currentSecond;
+    
+    let foundCurrentSlot = false;
     
     for (const slot of timetableData) {
       const [startHour, startMinute] = slot.startTime.split(':').map(Number);
@@ -56,10 +76,17 @@ export default function Timetable() {
         const elapsed = currentTimeInSeconds - startTimeInSeconds;
         const percent = Math.floor((elapsed / totalDuration) * 100);
         setProgressPercent(percent);
+        setCurrentSlot(slot);
+        foundCurrentSlot = true;
         break;
       }
     }
-  }, [currentTime]);
+    
+    if (!foundCurrentSlot) {
+      setCurrentSlot(null);
+      setProgressPercent(0);
+    }
+  };
 
   const getDayOfWeek = () => {
     const days = ['일', '월', '화', '수', '목', '금', '토'];
@@ -67,34 +94,29 @@ export default function Timetable() {
   };
 
   const getActivityForToday = (slot: TimeSlot) => {
-    if (!slot.subActivities) return slot.activity;
-
-    const today = currentTime.getDay(); // 0: 일요일, 1: 월요일, ...
+    if (!slot.activity) return '수업';
     
-    if (today === 1 && slot.subActivities.monday) {
-      return slot.subActivities.monday;
-    } else if (today === 3 && slot.subActivities.wednesday) {
-      return slot.subActivities.wednesday;
-    } else if (today === 5 && slot.subActivities.friday) {
-      return slot.subActivities.friday;
+    if (slot.subActivities) {
+      const today = currentTime.getDay(); // 0: 일요일, 1: 월요일, ...
+      
+      if (today === 1 && slot.subActivities.monday) {
+        return slot.subActivities.monday;
+      } else if (today === 2 && slot.subActivities.tuesday) {
+        return slot.subActivities.tuesday;
+      } else if (today === 3 && slot.subActivities.wednesday) {
+        return slot.subActivities.wednesday;
+      } else if (today === 4 && slot.subActivities.thursday) {
+        return slot.subActivities.thursday;
+      } else if (today === 5 && slot.subActivities.friday) {
+        return slot.subActivities.friday;
+      }
     }
     
     return slot.activity;
   };
 
   const isCurrentTimeSlot = (slot: TimeSlot) => {
-    const now = currentTime;
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
-    const currentTimeInMinutes = currentHour * 60 + currentMinute;
-    
-    const [startHour, startMinute] = slot.startTime.split(':').map(Number);
-    const [endHour, endMinute] = slot.endTime.split(':').map(Number);
-    
-    const startTimeInMinutes = startHour * 60 + startMinute;
-    const endTimeInMinutes = endHour * 60 + endMinute;
-    
-    return currentTimeInMinutes >= startTimeInMinutes && currentTimeInMinutes < endTimeInMinutes;
+    return currentSlot === slot;
   };
 
   // 클라이언트 사이드에서만 렌더링
@@ -146,7 +168,7 @@ export default function Timetable() {
                           color: isCurrent ? 'primary.dark' : 'inherit'
                         }}
                       >
-                        {getActivityForToday(slot) || '수업'}
+                        {getActivityForToday(slot)}
                       </Typography>
                       
                       {isCurrent && (

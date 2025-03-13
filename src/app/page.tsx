@@ -29,12 +29,28 @@ export default function Home() {
   // 클라이언트 사이드에서만 렌더링되도록 설정
   useEffect(() => {
     setMounted(true);
+    // 초기 마운트 시 즉시 시간 업데이트
+    updateCurrentDate();
   }, []);
+
+  // 현재 시간을 한국 시간(KST)으로 가져오는 함수
+  const getKoreanTime = () => {
+    const now = new Date();
+    // 한국 시간으로 변환 (UTC+9)
+    const koreaTimeOffset = 9 * 60 * 60 * 1000; // 9시간을 밀리초로 변환
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60 * 1000); // 현재 시간을 UTC로 변환
+    return new Date(utc + koreaTimeOffset);
+  };
+
+  // 현재 날짜 업데이트 함수
+  const updateCurrentDate = () => {
+    setCurrentDate(getKoreanTime());
+  };
 
   // 현재 날짜 업데이트
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentDate(new Date());
+      updateCurrentDate();
     }, 60000); // 1분마다 업데이트
 
     return () => clearInterval(timer);
@@ -90,7 +106,7 @@ export default function Home() {
             </IconButton>
           </Box>
           <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 'medium' }}>
-            {formatDate(currentDate)}
+            {formatDate(currentDate)} (KST)
           </Typography>
         </Box>
         
@@ -135,6 +151,11 @@ export default function Home() {
             <ListItem>
               <ListItemText 
                 primary="앱을 계속 열어두면 시간표를 실시간으로 확인할 수 있습니다." 
+              />
+            </ListItem>
+            <ListItem>
+              <ListItemText 
+                primary="모든 시간은 한국 표준시(KST)를 기준으로 표시됩니다." 
               />
             </ListItem>
           </List>

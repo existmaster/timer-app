@@ -2,6 +2,15 @@
 
 시간표를 관리하고 일정에 대한 알림을 제공하는 웹 애플리케이션입니다. 이 프로젝트는 [Next.js](https://nextjs.org)를 기반으로 개발되었습니다.
 
+## 배포 정보
+
+- **배포 URL**: [https://kt-alp-timer.netlify.app](https://kt-alp-timer.netlify.app)
+- **배포 플랫폼**: Netlify
+- **마지막 배포 날짜**: 2024년 3월 13일
+- **배포 로그**: [https://app.netlify.com/sites/kt-alp-timer/deploys](https://app.netlify.com/sites/kt-alp-timer/deploys)
+
+더 자세한 배포 정보는 [DEPLOYMENT.md](./DEPLOYMENT.md) 파일을 참조하세요.
+
 ## 기능
 
 - 현재 시간 및 다음 일정까지 남은 시간 표시
@@ -9,6 +18,7 @@
 - 일정 시작 전 브라우저 알림 제공
 - 반응형 디자인으로 모바일 및 데스크톱 환경 지원
 - PWA(Progressive Web App) 지원으로 설치 가능
+- 한국 표준시(KST) 기준으로 모든 시간 표시
 
 ## 시작하기
 
@@ -37,6 +47,25 @@ yarn build
 ```
 
 빌드 결과는 `out` 디렉토리에 생성됩니다.
+
+Netlify에 배포하려면:
+
+```bash
+# Netlify CLI 설치
+npm install -g netlify-cli
+
+# Netlify 로그인
+netlify login
+
+# 프로젝트 초기화 (처음 배포 시)
+netlify init
+
+# 빌드
+npm run build
+
+# 배포
+netlify deploy --prod
+```
 
 ## PWA 기능
 
